@@ -46,18 +46,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void test2(View view) {
+//        Cursor c = cr.query(uriSettings,
+//                null,
+//                "name = ?",new String[]{Settings.System.SCREEN_BRIGHTNESS},null);
+//        c.moveToNext();
+//        String value = c.getString(c.getColumnIndexOrThrow("value"));
+//        Log.v("brad", "v = " + value);
+//
+//        try {
+//            int v2 = Settings.System.getInt(cr, Settings.System.SCREEN_BRIGHTNESS);
+//            Log.v("brad", "v2 = " + v2);
+//        }catch (Exception e){
+//            Log.v("brad", e.toString());
+//        }
+        Log.v("brad", getSystemSetting(Settings.System.ANDROID_ID));
+
+    }
+
+    private String getSystemSetting(String settingName){
         Cursor c = cr.query(uriSettings,
                 null,
-                "name = ?",new String[]{Settings.System.SCREEN_BRIGHTNESS},null);
-        c.moveToNext();
-        String value = c.getString(c.getColumnIndexOrThrow("value"));
-        Log.v("brad", "v = " + value);
-
+                "name = ?",new String[]{settingName},null);
         try {
-            int v2 = Settings.System.getInt(cr, Settings.System.SCREEN_BRIGHTNESS);
-            Log.v("brad", "v2 = " + v2);
+            return Settings.System.getString(cr, settingName);
         }catch (Exception e){
             Log.v("brad", e.toString());
+            return null;
         }
     }
+
 }
