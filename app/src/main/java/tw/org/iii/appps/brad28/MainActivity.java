@@ -10,7 +10,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -26,11 +28,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CONTACTS)
+                Manifest.permission.READ_CALL_LOG)
                 != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS},
+                        new String[]{Manifest.permission.READ_CALL_LOG},
                         123);
 
         } else {
@@ -125,6 +127,35 @@ public class MainActivity extends AppCompatActivity {
         c.close();
 
         return ret;
+    }
+
+    public void test4(View view){
+        // CallLog.Calls.CONTENT_URI
+        // CallLog.Calls.CACHED_NAME
+        // CallLog.Calls.NUMBER
+        // CallLog.Calls.TYPE => CallLog.Calls.INCOMING_TYPE, OUTGOING_TYPE, MISSED_TYPE
+        // CallLog.Calls.DATE
+        // CallLog.Calls.DURATION (second)
+
+        Cursor c = cr.query(CallLog.Calls.CONTENT_URI,
+                null,null,null,null);
+
+        while (c.moveToNext()){
+            String name = c.getString(c.getColumnIndex(CallLog.Calls.CACHED_NAME));
+            String number = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER));
+            Log.v("brad", name + ":" + number);
+
+        }
+        c.close();
+
+
+
+    }
+
+
+    public void test5(View view){
+        // MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        // MediaStore.Images.Media.DATA
     }
 
 }
