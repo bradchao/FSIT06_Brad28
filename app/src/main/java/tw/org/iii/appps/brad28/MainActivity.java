@@ -28,11 +28,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_CALL_LOG)
+                Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
                 ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CALL_LOG},
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                         123);
 
         } else {
@@ -156,6 +156,18 @@ public class MainActivity extends AppCompatActivity {
     public void test5(View view){
         // MediaStore.Images.Media.EXTERNAL_CONTENT_URI
         // MediaStore.Images.Media.DATA
+
+        Cursor c = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null,null,null,null);
+
+        while (c.moveToNext()){
+            String filepath = c.getString(c.getColumnIndex(MediaStore.Images.Media.DATA));
+            Log.v("brad", filepath);
+
+        }
+        c.close();
+
+
     }
 
 }
