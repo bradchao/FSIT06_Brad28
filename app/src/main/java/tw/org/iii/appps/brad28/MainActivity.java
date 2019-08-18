@@ -1,8 +1,12 @@
 package tw.org.iii.appps.brad28;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.content.ContentResolver;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,6 +24,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        123);
+
+        } else {
+            // Permission has already been granted
+        }
+
         cr = getContentResolver();
 
         // content://database/table
@@ -36,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
                 null,null,null,null);
 
         int colCount = c.getColumnCount();
-        c.move(2);
         while (c.moveToNext()){
             for (int i=0; i<colCount; i++){
                 Log.v("brad", c.getColumnName(i) + " => " + c.getString(i));
             }
         }
+        c.close();
 
     }
 
@@ -64,15 +81,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getSystemSetting(String settingName){
+        String ret = null;
         Cursor c = cr.query(uriSettings,
                 null,
                 "name = ?",new String[]{settingName},null);
         try {
-            return Settings.System.getString(cr, settingName);
+            ret =  Settings.System.getString(cr, settingName);
         }catch (Exception e){
             Log.v("brad", e.toString());
-            return null;
+            //return null;
         }
+        c.close();
+        return ret;
+    }
+
+    public void test3(View view) {
+        //ContactsContract.Contacts.CONTENT_URI 所有聯絡人
+        //
+        //ContactsContract.CommonDataKinds.Phone
+        //ContactsContract.CommonDataKinds.Email
+        //ContactsContract.CommonDataKinds.Photo
+
+        // ContactsContract.Contacts._ID => key => phone
+        Log.v("brad", getPhoneNumber("36483"));
+    }
+
+    private String getPhoneNumber(String id){
+        // where ContactsContract.CommonDataKinds.Photo.CONTACT_ID+"=?"
+        String ret = null;
+        Cursor c = cr.query(
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                null,
+                ContactsContract.CommonDataKinds.Photo.CONTACT_ID+"=?",
+                new String[]{id},null
+        );
+        int count = c.getCount();
+        if (count>0) {
+            c.moveToNext();
+            int col = c.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            ret =  c.getString(col);
+        }
+
+        c.close();
+
+        return ret;
     }
 
 }
